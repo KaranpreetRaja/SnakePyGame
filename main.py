@@ -3,18 +3,20 @@ from pygame.locals import *
 
 window_width, window_height = 800, 600
 block_dimension = 50
-head_x, head_y = 0, 0
 
+class Block:
+    def __init__(self, image_path, x, y) -> None:
+        self.block = pygame.transform.scale(pygame.image.load(image_path), (block_dimension, block_dimension))
+        self.x = x
+        self.y = y
 
 class Snake:
     def __init__(self) -> None:
-        self.head = self.addBlock("assets/snake_head.png")
+        self.head = Block("assets/snake_head.png", 0, 0)
 
-        self.head_x, self.head_y = 0, 0
-
-    def addBlock(self, image_path):
-        return pygame.transform.scale(pygame.image.load(image_path), (block_dimension, block_dimension))
-
+    def updateSnake(self, x, y) -> None:
+        self.head.x += x
+        self.head.y += y
 
 
 class SnakeGame:
@@ -28,7 +30,7 @@ class SnakeGame:
 
         self.snake = Snake()
 
-        self.buildBlock(self.snake.head, self.snake.head_x, self.snake.head_y)
+        self.moveSnake(0, 0)
 
         self.running  = True
 
@@ -42,29 +44,25 @@ class SnakeGame:
                     self.running  = False
 
                 if event.key == K_UP:
-                    self.snake.head_y -= block_dimension
-                    self.buildBlock(self.snake.head, self.snake.head_x, self.snake.head_y)
+                    self.moveSnake(0, -block_dimension)
                 elif event.key == K_DOWN:
-                    self.snake.head_y += block_dimension
-                    self.buildBlock(self.snake.head, self.snake.head_x, self.snake.head_y)
+                    self.moveSnake(0, block_dimension)
                 elif event.key == K_LEFT:
-                    self.snake.head_x -= block_dimension
-                    self.buildBlock(self.snake.head, self.snake.head_x, self.snake.head_y)
+                    self.moveSnake(-block_dimension, 0)
                 elif event.key == K_RIGHT:
-                    self.snake.head_x += block_dimension
-                    self.buildBlock(self.snake.head, self.snake.head_x, self.snake.head_y)
+                    self.moveSnake(block_dimension, 0)
 
             if event.type == QUIT:
                 self.running  = False
 
 
-    def buildBlock(self, block, x, y):
+    def moveSnake(self, x, y):
         self.window.fill((143,188,143))
-        self.window.blit(block, (x, y))
+        self.snake.updateSnake(x, y)
+        self.window.blit(self.snake.head.block, (self.snake.head.x, self.snake.head.y))
         pygame.display.flip()
 
 
-running = True
 
 if __name__ == "__main__":
     SnakeGame()
