@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import random
+import time
 window_width, window_height = 500, 500
 block_dimension = 50
 
@@ -56,8 +57,10 @@ class SnakeGame:
 
         self.moveSnake(0, 0)
 
-        self.running  = True
+        self.direction = 1
 
+        self.running  = True
+        self.lastmove = time.time()
         while self.running == True:
             self.gamerun()
     
@@ -69,15 +72,30 @@ class SnakeGame:
 
                 if event.key == K_UP:
                     self.moveSnake(0, -block_dimension)
+                    self.direction = 0
                 elif event.key == K_DOWN:
                     self.moveSnake(0, block_dimension)
+                    self.direction = 1
                 elif event.key == K_LEFT:
                     self.moveSnake(-block_dimension, 0)
+                    self.direction = 2
                 elif event.key == K_RIGHT:
                     self.moveSnake(block_dimension, 0)
+                    self.direction = 3
 
             if event.type == QUIT:
                 self.running  = False
+        if(time.time()-self.lastmove > 0.25):
+            if (self.direction == 0):
+                self.moveSnake(0, -block_dimension)
+            elif (self.direction == 1):
+                self.moveSnake(0, block_dimension)
+            elif (self.direction == 2):
+                self.moveSnake(-block_dimension, 0)
+            elif (self.direction == 3):
+                self.moveSnake(block_dimension, 0)
+            self.lastmove = time.time()
+
 
 
     def moveSnake(self, x, y):
@@ -99,8 +117,6 @@ class SnakeGame:
 
         for block in self.snake.body:
             self.window.blit(block.block, (block.x, block.y))
-
-
 
 
 if __name__ == "__main__":
